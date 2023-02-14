@@ -1,5 +1,6 @@
-import { Ctx } from './server.ts'
 import { Component } from 'react'
+import { Ctx } from './ctx.ts'
+// import {dirname, fromFileUrl} from "std/path/mod.ts";
 
 export enum HandlerType {
 	API = 'API',
@@ -34,14 +35,21 @@ export interface Module {
 	default?: Component<PageProps>
 }
 
+// 	readonly #base: string
+// 	readonly #entrypoint: string
+
 export const checkModule = async (name: string): Promise<Module> => {
+	// const dir = dirname(fromFileUrl(base));
+
 	const mod: Module = {}
 	const module = await import(name)
 
 	try {
-		const { handle }: Handler = module
-		mod.handle = handle
-	} catch {}
+		const m: Handler = module
+		mod.handle = m.handle
+	} catch (e) {
+		// console.log(e)
+	}
 	try {
 		const m: WebComponent = module
 		mod.default = m.default
@@ -114,22 +122,4 @@ export const checkModule = async (name: string): Promise<Module> => {
  对于一个目录中，同时存在 [id] 和 [...id] 时，会优先匹配 [id]
 
  但是如果同时存在 [...id] 和 a/b/c/[id] 的情况，会遵循深度优先的规则
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
  */

@@ -1,16 +1,7 @@
+import { CtxResponse } from './response.ts'
 import { ConnInfo } from 'std/http/server.ts'
 import { Handler, HandlerType } from './handler.ts'
-import { CtxResponse } from './response.ts'
-
-export const serve = async (req: Request, connInfo: ConnInfo): Promise<Response> => {
-	const ctx = createCtx(req, connInfo)
-	await ctx.next()
-	return ctx.response.Response()
-}
-
-export const createCtx = (req: Request, connInfo: ConnInfo): Ctx => {
-	return new Ctx({ a: '1' }, req, connInfo, {}, HandlerType.API, [])
-}
+import { Server } from './server.ts'
 
 export class Ctx {
 	readonly request: Request
@@ -52,8 +43,4 @@ export class Ctx {
 			this.#index++
 		}
 	}
-}
-
-export interface Server {
-	a: string
 }
