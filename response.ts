@@ -1,4 +1,4 @@
-import { newRespone } from './util.ts'
+import { newResponse } from './util.ts'
 
 export class Response {
 	status: number
@@ -37,5 +37,5 @@ export class Response {
 		return this
 	}
 
-	Response = () => newRespone(this.body, { status: this.status, statusText: this.statusText, headers: this.headers })
+	Response = () => newResponse(this.body, { status: this.status, statusText: this.statusText, headers: this.headers })
 }
