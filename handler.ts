@@ -35,9 +35,6 @@ export interface Module {
 	default?: Component
 }
 
-// 	readonly #base: string
-// 	readonly #entrypoint: string
-
 export const checkModule = async (name: string): Promise<Module> => {
 	const mod: Module = await import(name)
 	if (mod.getServerSideProps && mod.getStaticProps) {
@@ -45,6 +42,9 @@ export const checkModule = async (name: string): Promise<Module> => {
 	}
 	if (!mod.default && (mod.getServerSideProps || mod.getStaticProps)) {
 		throw new Error('Module must have default export')
+	}
+	if (!mod.handle && !mod.default && !mod.getServerSideProps && !mod.getStaticProps) {
+		throw new Error('Module must have at least one of handle, default, getServerSideProps or getStaticProps')
 	}
 	return mod
 }
