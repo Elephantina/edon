@@ -1,5 +1,5 @@
-import { Component } from 'react'
-import { Ctx } from './ctx.ts'
+import { Component as RC } from 'react'
+import { Context } from './context.ts'
 // import {dirname, fromFileUrl} from "std/path/mod.ts";
 
 export enum HandlerType {
@@ -9,7 +9,7 @@ export enum HandlerType {
 }
 
 export interface Handler {
-	handle: (ctx: Ctx) => Promise<void>
+	handle: (ctx: Context) => Promise<void>
 }
 
 export interface PageProps<T = unknown> {
@@ -17,21 +17,21 @@ export interface PageProps<T = unknown> {
 }
 
 export interface ServerSideRendering {
-	getServerSideProps: (ctx: Ctx) => Promise<PageProps>
+	getServerSideProps: (ctx: Context) => Promise<PageProps>
 }
 
 export interface ServerSideGeneration {
-	getStaticProps: (ctx: Ctx) => Promise<PageProps>
+	getStaticProps: (ctx: Context) => Promise<PageProps>
 }
 
-export interface WebComponent {
-	default: Component<PageProps>
+export interface Component {
+	default: RC<PageProps>
 }
 
 export interface Module {
-	handle?: (ctx: Ctx) => Promise<void>
-	getServerSideProps?: (ctx: Ctx) => Promise<PageProps>
-	getStaticProps?: (ctx: Ctx) => Promise<PageProps>
+	handle?: (ctx: Context) => Promise<void>
+	getServerSideProps?: (ctx: Context) => Promise<PageProps>
+	getStaticProps?: (ctx: Context) => Promise<PageProps>
 	default?: Component<PageProps>
 }
 
@@ -51,7 +51,7 @@ export const checkModule = async (name: string): Promise<Module> => {
 		// console.log(e)
 	}
 	try {
-		const m: WebComponent = module
+		const m: Component = module
 		mod.default = m.default
 	} catch (_) {}
 	try {
@@ -78,9 +78,9 @@ export const checkModule = async (name: string): Promise<Module> => {
  Module 类型
 
 
- 中间件   -> Handler 类型，导出为 Handler: (Ctx) => Promise<void>
+ 中间件   -> Handler 类型，导出为 Handler: (Context) => Promise<void>
  网页组件   -> React.Conpoment 类型，默认导出，导出为 default: React.Conpoment<PageProps>
- 服务端渲染 ->  Handler 类型，非默认导出，导出为 SSR: (Ctx) => Promise<PageProps>
+ 服务端渲染 ->  Handler 类型，非默认导出，导出为 SSR: (Context) => Promise<PageProps>
 
  执行顺序为，中间件 > SSR > 网页组件
  */

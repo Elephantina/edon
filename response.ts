@@ -1,4 +1,4 @@
-export class CtxResponse {
+export class Response {
 	status: number
 	statusText: string
 	headers: Headers
@@ -11,23 +11,23 @@ export class CtxResponse {
 		this.body = body
 	}
 
-	setStatus(status?: number, statusText?: string): CtxResponse {
+	setStatus(status?: number, statusText?: string): Response {
 		this.status = status ?? 200
 		this.statusText = statusText ?? '200'
 		return this
 	}
 
-	setHeader(headers?: HeadersInit): CtxResponse {
+	setHeader(headers?: HeadersInit): Response {
 		this.headers = new Headers(headers)
 		return this
 	}
 
-	addHeader(headers?: HeadersInit): CtxResponse {
+	addHeader(headers?: HeadersInit): Response {
 		new Headers(headers).forEach((value, key) => this.headers.set(key, value))
 		return this
 	}
 
-	setBody(body?: BodyInit): CtxResponse {
+	setBody(body?: BodyInit): Response {
 		if (this.body) {
 			throw Error('body is exist')
 		}

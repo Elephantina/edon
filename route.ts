@@ -9,9 +9,9 @@ interface RouteTree {
 }
 
 // export interface Module {
-// 	handle?: (ctx: Ctx) => Promise<void>
-// 	getServerSideProps?: (ctx: Ctx) => Promise<PageProps>
-// 	getStaticProps?: (ctx: Ctx) => Promise<PageProps>
+// 	handle?: (ctx: Context) => Promise<void>
+// 	getServerSideProps?: (ctx: Context) => Promise<PageProps>
+// 	getStaticProps?: (ctx: Context) => Promise<PageProps>
 // 	default?: Component<PageProps>
 // }
 

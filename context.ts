@@ -1,11 +1,11 @@
-import { CtxResponse } from './response.ts'
+import { Response } from './response.ts'
 import { ConnInfo } from 'std/http/server.ts'
 import { Handler, HandlerType } from './handler.ts'
 import { Server } from './server.ts'
 
-export class Ctx {
+export class Context {
 	readonly request: Request
-	readonly response: CtxResponse
+	readonly response: Response
 	readonly connInfo: ConnInfo
 	readonly url: URL
 	readonly params: Record<string, string>
@@ -24,7 +24,7 @@ export class Ctx {
 		handlers: Handler[],
 	) {
 		this.request = req
-		this.response = new CtxResponse()
+		this.response = new Response()
 		this.connInfo = connInfo
 		this.url = new URL(req.url)
 		this.params = params

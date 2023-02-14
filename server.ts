@@ -1,6 +1,6 @@
 import { ConnInfo } from 'std/http/server.ts'
 import { Handler, HandlerType } from './handler.ts'
-import { Ctx } from './ctx.ts'
+import { Context } from './context.ts'
 
 export class Server {
 	readonly listenAddr: Deno.ListenOptions = { hostname: 'localhost', port: 9810 }
@@ -32,17 +32,17 @@ export class Server {
 	}
 
 	findRouter(url: URL): RouterProps | null {
-		// return new Ctx(new Server(), req, connInfo, {}, HandlerType.API, [])
+		// return new Context(new Server(), req, connInfo, {}, HandlerType.API, [])
 
 		return null
 	}
 
-	#createCtx(req: Request, connInfo: ConnInfo): Ctx {
+	#createCtx(req: Request, connInfo: ConnInfo): Context {
 		const props = this.findRouter(new URL(req.url))
 		if (props === null) {
-			return new Ctx(new Server(), req, connInfo, {}, HandlerType.API, [])
+			return new Context(new Server(), req, connInfo, {}, HandlerType.API, [])
 		}
-		return new Ctx(new Server(), req, connInfo, props.params, props.type, props.handlers)
+		return new Context(new Server(), req, connInfo, props.params, props.type, props.handlers)
 	}
 }
 
