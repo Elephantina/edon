@@ -1,3 +1,5 @@
+import { newRespone } from './util.ts'
+
 export class Response {
 	status: number
 	statusText: string
@@ -35,11 +37,5 @@ export class Response {
 		return this
 	}
 
-	Response(): Response {
-		return new Response(this.body, {
-			status: this.status,
-			statusText: this.statusText,
-			headers: this.headers,
-		})
-	}
+	Response = () => newRespone(this.body, { status: this.status, statusText: this.statusText, headers: this.headers })
 }

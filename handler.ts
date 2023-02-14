@@ -32,37 +32,14 @@ export interface Module {
 	handle?: (ctx: Context) => Promise<void>
 	getServerSideProps?: (ctx: Context) => Promise<PageProps>
 	getStaticProps?: (ctx: Context) => Promise<PageProps>
-	default?: Component<PageProps>
+	default?: Component
 }
 
 // 	readonly #base: string
 // 	readonly #entrypoint: string
 
 export const checkModule = async (name: string): Promise<Module> => {
-	// const dir = dirname(fromFileUrl(base));
-
-	const mod: Module = {}
-	const module = await import(name)
-
-	try {
-		const m: Handler = module
-		mod.handle = m.handle
-	} catch (e) {
-		// console.log(e)
-	}
-	try {
-		const m: Component = module
-		mod.default = m.default
-	} catch (_) {}
-	try {
-		const { getServerSideProps }: ServerSideRendering = module
-		mod.getServerSideProps = getServerSideProps
-	} catch (_) {}
-	try {
-		const { getStaticProps }: ServerSideGeneration = module
-		mod.getStaticProps = getStaticProps
-	} catch (_) {}
-
+	const mod: Module = await import(name)
 	if (mod.getServerSideProps && mod.getStaticProps) {
 		throw new Error('Module can only have one of SSR and SSG')
 	}
