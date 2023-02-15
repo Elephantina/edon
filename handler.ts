@@ -1,6 +1,5 @@
 import { Component as RC } from 'react'
 import { Context } from './context.ts'
-// import {dirname, fromFileUrl} from "std/path/mod.ts";
 
 export enum HandlerType {
 	API = 'API',
@@ -8,30 +7,18 @@ export enum HandlerType {
 	Notfound = 'Notfound',
 }
 
-export interface Handler {
-	handle: (ctx: Context) => Promise<void>
-}
-
 export interface PageProps<T = unknown> {
 	data: T
 }
-
-export interface ServerSideRendering {
-	getServerSideProps: (ctx: Context) => Promise<PageProps>
-}
-
-export interface ServerSideGeneration {
-	getStaticProps: (ctx: Context) => Promise<PageProps>
-}
-
-export interface Component {
-	default: RC<PageProps>
-}
+export type Handler = (ctx: Context) => Promise<void>
+export type ServerSideRendering = (ctx: Context) => Promise<PageProps>
+export type ServerSideGeneration = (ctx: Context) => Promise<PageProps>
+export type Component = RC<PageProps>
 
 export interface Module {
-	handle?: (ctx: Context) => Promise<void>
-	getServerSideProps?: (ctx: Context) => Promise<PageProps>
-	getStaticProps?: (ctx: Context) => Promise<PageProps>
+	handle?: Handler
+	getServerSideProps?: ServerSideRendering
+	getStaticProps?: ServerSideGeneration
 	default?: Component
 }
 

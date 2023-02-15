@@ -39,7 +39,7 @@ export class Context {
 		this.#index++
 
 		while (this.#index < this.#handlers.length) {
-			await this.#handlers[this.#index].handle(this)
+			await this.#handlers[this.#index](this)
 			this.#index++
 		}
 	}

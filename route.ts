@@ -8,17 +8,6 @@ interface RouteTree {
 	module?: Module[] | Module
 }
 
-// export interface Module {
-// 	handle?: (ctx: Context) => Promise<void>
-// 	getServerSideProps?: (ctx: Context) => Promise<PageProps>
-// 	getStaticProps?: (ctx: Context) => Promise<PageProps>
-// 	default?: Component<PageProps>
-// }
-
-// export const genRoute = async (dirname?: string): Promise<void> => {
-// 	const rt = await findRoute(dirname)
-// }
-
 export const findRoute = async (dir: string): Promise<RouterFile> => {
 	const node = await routeTraversal(dir)
 	return node

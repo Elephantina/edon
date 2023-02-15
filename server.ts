@@ -1,15 +1,24 @@
-import { ConnInfo } from 'std/http/server.ts'
+import { ConnInfo, Server as httpServer } from 'std/http/server.ts'
 import { Handler, HandlerType } from './handler.ts'
 import { Context } from './context.ts'
+import { newResponse } from './util.ts'
 
 export class Server {
-	readonly listenAddr: Deno.ListenOptions = { hostname: 'localhost', port: 9810 }
-	// readonly #base: string
-	// readonly #entrypoint: string
-	// readonly #route: Map<string, HandlerType>
-	// readonly #_404:Handler
-	// readonly #_500:Handler
-	// readonly #_400:Handler
+	readonly #httpServer: httpServer
+	readonly #onNoRoute: Handler
+
+	constructor({
+		hostname = 'locahost',
+		port = 9800,
+		onNoRoute = (ctx: Context): Promise<void> => {
+			ctx.response.setStatus(404)
+			return new Promise<void>((resolve) => resolve())
+		},
+		onError = (_: unknown) => newResponse(null, { status: 500 }),
+	}) {
+		this.#httpServer = new httpServer({ handler: this.serve, onError, hostname, port })
+		this.#onNoRoute = onNoRoute
+	}
 
 	async serve(req: Request, connInfo: ConnInfo): Promise<Response> {
 		const ctx = this.#createCtx(req, connInfo)
@@ -17,32 +26,23 @@ export class Server {
 		return ctx.response.Response()
 	}
 
-	async run() {
-		const ln = Deno.listen(this.listenAddr)
-		for await (const conn of ln) {
-			this.serveHttp(conn)
-		}
+	async run(tlsConfig?: { certFile: string; keyFile: string }) {
+		await (tlsConfig
+			? this.#httpServer.listenAndServeTls(tlsConfig!.certFile, tlsConfig!.keyFile)
+			: this.#httpServer.listenAndServe())
 	}
 
-	async serveHttp(conn: Deno.Conn) {
-		const hc = Deno.serveHttp(conn)
-		for await (const requestEvent of hc) {
-			requestEvent.respondWith(this.serve(requestEvent.request, conn))
-		}
-	}
+	close = () => this.#httpServer.close()
 
-	findRouter(url: URL): RouterProps | null {
+	findRouter(url: URL): RouterProps {
 		// return new Context(new Server(), req, connInfo, {}, HandlerType.API, [])
 
-		return null
+		return { params: {}, type: HandlerType.Notfound, handlers: [this.#onNoRoute] }
 	}
 
 	#createCtx(req: Request, connInfo: ConnInfo): Context {
 		const props = this.findRouter(new URL(req.url))
-		if (props === null) {
-			return new Context(new Server(), req, connInfo, {}, HandlerType.API, [])
-		}
-		return new Context(new Server(), req, connInfo, props.params, props.type, props.handlers)
+		return new Context(this, req, connInfo, props.params, props.type, props.handlers)
 	}
 }
 
