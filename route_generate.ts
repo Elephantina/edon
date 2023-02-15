@@ -1,4 +1,4 @@
-import { checkModule, Handler, HandlerType, Module } from './handler.ts'
+import { checkModule, HandlerType, Module } from './handler.ts'
 import { walk } from 'std/fs/walk.ts'
 import { toFileUrl } from 'std/path/mod.ts'
 
@@ -7,25 +7,18 @@ export const findRoute = async (dir: string): Promise<RouterFile> => {
 	return node
 }
 
-export type RouterProps = {
-	params: Record<string, string>
-	type: HandlerType
-	handlers: Handler[]
+interface RouterNode {
+	path: string
+	nodeType: NodeType
+	handlerType: HandlerType
+	handlers: Module[]
+	child: RouterNode[]
 }
 
-export type FindRouter = FindRouterAsync | FindRouterSync
-export type FindRouterAsync = (path: string) => Promise<RouterProps>
-export type FindRouterSync = (path: string) => RouterProps
-
-export const FindRouterProps = async (path: string, fn: FindRouter): Promise<RouterProps> => {
-	const data = fn(path)
-	let props = {} as RouterProps
-	if (data instanceof Promise) {
-		props = await data
-	} else {
-		props = data
-	}
-	return props
+enum NodeType {
+	Static = 0,
+	Fixed = 1,
+	Wild = 2,
 }
 
 class RouterFile {
