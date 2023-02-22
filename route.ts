@@ -13,20 +13,7 @@ export type RouterProps = {
 	handlers: Handler[]
 }
 
-export type FindRouter = FindRouterAsync | FindRouterSync
-export type FindRouterAsync = (path: string) => Promise<RouterProps>
-export type FindRouterSync = (path: string) => RouterProps
-
-export const FindRouterProps = async (path: string, fn: FindRouter): Promise<RouterProps> => {
-	const data = fn(path)
-	let props = {} as RouterProps
-	if (data instanceof Promise) {
-		props = await data
-	} else {
-		props = data
-	}
-	return props
-}
+export type FindRouter = (path: string) => Promise<RouterProps>
 
 class RouterFile {
 	readonly #dirname: string // file:///data/route/api/v1/user/[:id] -> file:///data

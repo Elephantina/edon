@@ -2,7 +2,7 @@ import { ConnInfo, Server as httpServer } from 'std/http/server.ts'
 import { Handler, HandlerType } from './handler.ts'
 import { Context } from './context.ts'
 import { newResponse } from './util.ts'
-import { FindRouter, FindRouterProps, RouterProps } from './route.ts'
+import { FindRouter, RouterProps } from './route.ts'
 
 export class Server {
 	readonly #httpServer: httpServer
@@ -17,7 +17,7 @@ export class Server {
 			return new Promise<void>((resolve) => resolve())
 		},
 		onError = (_: unknown) => newResponse(null, { status: 500 }),
-		findRouter = (_: string): RouterProps => {
+		findRouter = (_: string): Promise<RouterProps> => {
 			throw new Error('no config find router')
 		},
 	}) {
@@ -26,13 +26,13 @@ export class Server {
 		this.#findRouter = findRouter
 	}
 
-	async serve(req: Request, connInfo: ConnInfo): Promise<Response> {
+	serve = async (req: Request, connInfo: ConnInfo): Promise<Response> => {
 		const ctx = await this.#createCtx(req, connInfo)
 		await ctx.next()
 		return ctx.response.Response()
 	}
 
-	async run(tlsConfig?: { certFile: string; keyFile: string }) {
+	run = async (tlsConfig?: { certFile: string; keyFile: string }) => {
 		await (tlsConfig
 			? this.#httpServer.listenAndServeTls(tlsConfig!.certFile, tlsConfig!.keyFile)
 			: this.#httpServer.listenAndServe())
@@ -40,8 +40,8 @@ export class Server {
 
 	close = () => this.#httpServer.close()
 
-	async #createCtx(req: Request, connInfo: ConnInfo): Promise<Context> {
-		const props = await FindRouterProps(new URL(req.url).pathname, this.#findRouter)
+	#createCtx = async (req: Request, connInfo: ConnInfo): Promise<Context> => {
+		const props = await this.#findRouter(new URL(req.url).pathname)
 		if (props.type === HandlerType.Notfound) {
 			props.handlers = [this.#onNoRoute]
 		}

@@ -35,12 +35,16 @@ export class Context {
 		this.#handlers = handlers
 	}
 
-	async next() {
+	next = async () => {
 		this.#index++
 
 		while (this.#index < this.#handlers.length) {
 			await this.#handlers[this.#index](this)
 			this.#index++
 		}
+	}
+
+	abort = () => {
+		this.#index = this.#handlers.length
 	}
 }
