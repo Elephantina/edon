@@ -1,5 +1,5 @@
 export { Context } from './context.ts'
 export { HandlerType } from './handler.ts'
-export type { Handler, PageProps, ServerSideRender } from './handler.ts'
+export type { Handler } from './handler.ts'
 export { Response } from './response.ts'
 export { Server } from './server.ts'

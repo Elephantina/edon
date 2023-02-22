@@ -6,21 +6,15 @@ export enum HandlerType {
 	Notfound = 'Notfound',
 }
 
-export interface PageProps<T = unknown> {
-	data: T
-}
 export type Handler = (ctx: Context) => Promise<void>
-export type ServerSideRender = (ctx: Context) => Promise<PageProps>
-
 export interface Module {
 	handle?: Handler
-	getServerSideProps?: ServerSideRender
 }
 
 export const checkModule = async (name: string): Promise<Module> => {
 	const mod: Module = await import(name)
-	if (!mod.handle && !mod.getServerSideProps) {
-		throw new Error('Module must have at least one of handle, default, getServerSideProps or getStaticProps')
+	if (!mod.handle) {
+		throw new Error('Module must have at least one of handle')
 	}
 	return mod
 }
