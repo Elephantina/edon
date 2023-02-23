@@ -56,26 +56,29 @@ export class RingBuffer<T> {
 	}
 
 	size = () => this.#buf.length
-	idle = () => this.#r > this.#w ? this.#r - this.#w : this.size() - this.#w + this.#r
+	idle = () => this.#r > this.#w ? this.#r - this.#w - 1 : this.size() - this.#w + this.#r - 1
 
 	reallocate = (initCapacity: number): RingBuffer<T> => {
-		const objectConstructor = this.#objectConstructor
-		const rb = new RingBuffer<T>({ initCapacity: 1, objectConstructor })
-
 		if (initCapacity < 2) {
 			initCapacity = 2
 		}
 
-		let available = this.#r > this.#w
-			? this.#buf.slice(this.#r, this.#w)
-			: this.#buf.slice(0, this.#r).concat(this.#buf.slice(this.#w))
+		const objectConstructor = this.#objectConstructor
+		const rb = new RingBuffer<T>({ initCapacity, objectConstructor })
 
-		if (available.length > initCapacity) {
-			available = available.slice(0, initCapacity)
+		const available = this.#r > this.#w
+			? this.#buf.slice(this.#r, this.#w)
+			: this.#buf.slice(0, this.#r).concat(this.#buf.slice(this.#r, this.#w))
+
+		if (available.length >= initCapacity) {
+			rb.#buf = available.slice(0, initCapacity)
+			rb.#r = 1
+			rb.#w = 0
+		} else {
+			console.log(rb.#w, available.length, initCapacity)
+			rb.#w = available.length
+			rb.#buf = available.concat(new Array<T>(initCapacity - available.length))
 		}
-		rb.#buf = available
-		rb.#r = 1
-		rb.#w = 1
 
 		return rb
 	}
