@@ -1,3 +1,6 @@
+import { red } from "https://deno.land/std@0.177.0/fmt/colors.ts";
+import { buildMessage, diff, diffstr } from "https://deno.land/std@0.177.0/testing/_diff.ts";
+import { format } from "https://deno.land/std@0.177.0/testing/_format.ts";
 import { assert, assertEquals, equal } from 'std/testing/asserts.ts'
 import { RingBuffer } from './ringbuffer.ts'
 
@@ -108,7 +111,7 @@ Deno.test('reallocate', () => {
 		{
 			crb: () => {
 				const rb = new RingBuffer({ objectConstructor, initCapacity: 10 })
-				let i = 7
+				let i = 8
 				while (i > 0) {
 					i--
 					rb.put(objectConstructor())
@@ -130,8 +133,10 @@ Deno.test('reallocate', () => {
 	testdata.forEach((val) => {
 		const act = val.crb().reallocate(20)
 		const exp = val.expect()
-		console.log(act.size(), act.idle()) // 20 - 10
-		console.log(exp.size(), exp.idle()) // 20 - 10
-		assert(equal(act, exp), `Failed assertion`)
+		
+		assert(equal(act.size(), exp.size()),'Failed assertion')
+		assert(equal(act.idle(), exp.idle()),'Failed assertion')
 	})
 })
+
+

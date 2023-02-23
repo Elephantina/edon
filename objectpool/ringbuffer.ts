@@ -66,9 +66,9 @@ export class RingBuffer<T> {
 		const objectConstructor = this.#objectConstructor
 		const rb = new RingBuffer<T>({ initCapacity, objectConstructor })
 
-		const available = this.#r > this.#w
+		const available = this.#r < this.#w
 			? this.#buf.slice(this.#r, this.#w)
-			: this.#buf.slice(0, this.#r).concat(this.#buf.slice(this.#r, this.#w))
+			: this.#buf.slice(0, this.#w).concat(this.#buf.slice(this.#r))
 
 		if (available.length >= initCapacity) {
 			rb.#buf = available.slice(0, initCapacity)
